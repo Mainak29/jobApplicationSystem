@@ -31,4 +31,28 @@ public class CompanyServiceImp implements CompanyService {
     public Company getCompaniesById(Long id) {
         return companyRepository.findById(id).orElse(null);
     }
+
+    @Override
+    public boolean deleteCompanyById(Long id) {
+        Company company = getCompaniesById(id);
+        if (company == null){
+            return false;
+        }
+        companyRepository.deleteById(id);
+        return true;
+    }
+
+    @Override
+    public boolean putCompanyById(Company newCompany, Long id) {
+        Company existingCompany = getCompaniesById(id);
+        if(existingCompany == null){
+            return false;
+        }else{
+            existingCompany.setName(newCompany.getName());
+            existingCompany.setCompanyDescription(newCompany.getCompanyDescription());
+            existingCompany.setLocation(newCompany.getLocation());
+            companyRepository.save(existingCompany);
+            return true;
+        }
+    }
 }
