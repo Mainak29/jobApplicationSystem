@@ -1,10 +1,11 @@
 package com.first.JobApplication.company;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.first.JobApplication.job.Job;
+import com.first.JobApplication.review.Review;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 public class Company {
@@ -17,6 +18,11 @@ public class Company {
     private String name;
     private String companyDescription;
     private String location;
+
+    @OneToMany
+    private List<Job> jobs;
+    @OneToMany
+    private List<Review> reviews;
 
     public Company(Long id, String name, String companyDescription, String location) {
         this.id = id;
