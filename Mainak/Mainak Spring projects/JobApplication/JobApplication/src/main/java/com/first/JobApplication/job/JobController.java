@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/companies/{companyId}")
 public class JobController {
 
     private JobService jobService;
@@ -17,14 +18,18 @@ public class JobController {
     }
 
     @GetMapping("/jobs")
-    public ResponseEntity<List<Job>> getAllJobs(){
-        return ResponseEntity.ok(jobService.getAllJobs());
+    public ResponseEntity<List<Job>> getAllJobs(@PathVariable Long companyId){
+        return ResponseEntity.ok(jobService.getAllJobs(companyId));
     }
 
     @PostMapping("/jobs")
-    public ResponseEntity<String> CreateJob(@RequestBody Job job){
-        jobService.CreateJob(job);
-        return new ResponseEntity<>("job added successfully",HttpStatus.CREATED);
+    public ResponseEntity<String> CreateJob(@PathVariable Long companyId, @RequestBody Job job){
+        if(jobService.CreateJob(job, companyId)) {
+            return new ResponseEntity<>("job added successfully", HttpStatus.CREATED);
+        }
+        else {
+            return new ResponseEntity<>("Job addition not possible, because company not present", HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/jobs/{id}")

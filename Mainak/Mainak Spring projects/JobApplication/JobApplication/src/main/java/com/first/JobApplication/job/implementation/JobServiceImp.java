@@ -1,11 +1,11 @@
 package com.first.JobApplication.job.implementation;
 
+import com.first.JobApplication.company.Company;
+import com.first.JobApplication.company.CompanyService;
 import com.first.JobApplication.job.Job;
 import com.first.JobApplication.job.JobRepository;
 import com.first.JobApplication.job.JobService;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,21 +15,29 @@ public class JobServiceImp implements JobService {
 
     //public List<Job> jobs = new ArrayList<>();
     JobRepository jobRepository;
+    CompanyService companyService;
     //private long nextId = 1L;
 
-    public JobServiceImp(JobRepository jobRepository) {
+    public JobServiceImp(JobRepository jobRepository, CompanyService companyService) {
         this.jobRepository = jobRepository;
+        this.companyService = companyService;
     }
 
     @Override
-    public List<Job> getAllJobs() {
-        return jobRepository.findAll();
+    public List<Job> getAllJobs(Long companyId) {
+        return jobRepository.findByCompanyId(companyId);
     }
 
     @Override
-    public void CreateJob(Job job) {
+    public boolean CreateJob(Job job, Long companyId) {
         //job.setId(nextId++);
-        jobRepository.save(job);
+        Company company = companyService.getCompaniesById(companyId);
+        if(null != company){
+            job.setCompany(company);
+            jobRepository.save(job);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -39,12 +47,12 @@ public class JobServiceImp implements JobService {
 
     @Override
     public boolean deleteJobById(Long id) {
-        try {
-            jobRepository.deleteById(id);
+        Job job = getJobById(id);
+        if(null != job){
+            jobRepository.delete(job);
             return true;
-        }catch (Exception e){
-            return false;
         }
+        return false;
     }
 
     @Override
